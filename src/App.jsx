@@ -5,10 +5,11 @@ const App = () => {
     const [contactPressed, setContactPressed] = useState(false);
     const [editPressed, setEditPressed] = useState(false);
     const [selectedContactId, setSelectedContactId] = useState(null);
-    const [name, setName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [submitName, setSubmitName] = useState('');
+    const [updateName, setUpdateName] = useState('');
+    const [submitPhone, setSubmitPhone] = useState('');
+    const [updatePhone, setUpdatePhone] = useState('');
     const [data, setData] = useState([]);
-    const [errorMessage, setErrorMessage] = useState('');
     const [popupMessage, setPopupMessage] = useState('');
     const [popupMessageE, setPopupMessageE] = useState('');
     const [deletingContactId, setDeletingContactId] = useState(null);
@@ -24,16 +25,22 @@ const App = () => {
 
     const handleEditPressed = (contact) => {
         setSelectedContactId(contact._id);
-        setName(contact.name);
-        setPhoneNumber(contact.phone);
+        setUpdateName(contact.name);
+        setUpdatePhone(contact.phone);
         setPressed(false);
         setEditPressed(true);
     };
 
-    const handleNameChange = (e) => {
+    const handleSubmitNameChange = (e) => {
         const inputName = e.target.value;
         const truncatedName = inputName.slice(0, 20);
-        setName(truncatedName);
+        setSubmitName(truncatedName);
+    };
+
+    const handleUpdateNameChange = (e) => {
+        const inputName = e.target.value;
+        const truncatedName = inputName.slice(0, 20);
+        setUpdateName(truncatedName);
     };
 
     const fetchData = () => {
@@ -42,46 +49,35 @@ const App = () => {
             .then((result) => setData(result));
     };
 
-    const handlePhoneNumberChange = (e) => {
+    const handleSubmitPhoneNumberChange = (e) => {
         const inputPhoneNumber = e.target.value;
         const validatedPhoneNumber = inputPhoneNumber.replace(/\D/g, '').slice(0, 10);
-        setPhoneNumber(validatedPhoneNumber);
+        setSubmitPhone(validatedPhoneNumber);
+    };
+
+    const handleUpdatePhoneNumberChange = (e) => {
+        const inputPhoneNumber = e.target.value;
+        const validatedPhoneNumber = inputPhoneNumber.replace(/\D/g, '').slice(0, 10);
+        setUpdatePhone(validatedPhoneNumber);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!name.trim()) {
-            setErrorMessage('Name is required');
-            setTimeout(() => {
-                setErrorMessage('');
-            }, 2000);
-            return;
-        }
-
-        if (phoneNumber.length < 10) {
-            setErrorMessage('Must be 10 digits');
-            setTimeout(() => {
-                setErrorMessage('');
-            }, 2000);
-            return;
-        }
-
-        console.log('Name:', name);
-        console.log('Phone Number:', phoneNumber);
+        console.log('Name:', submitName);
+        console.log('Phone Number:', submitPhone);
         fetch('/addPhone', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name: name, phone: phoneNumber }),
+            body: JSON.stringify({ name: submitName, phone: submitPhone }),
         })
             .then((response) => response.json())
             .then((result) => {
                 console.log(result);
                 fetchData();
-                setName('');
-                setPhoneNumber('');
+                setSubmitName('');
+                setSubmitPhone('');
                 setPressed(false);
                 setContactPressed(true);
                 setPopupMessage('Contact saved successfully!');
@@ -96,44 +92,26 @@ const App = () => {
 
     const handleEdit = (e) => {
         e.preventDefault();
-
-        if (!name.trim()) {
-            setErrorMessage('Name is required');
-            setTimeout(() => {
-                setErrorMessage('');
-            }, 2000);
-            return;
-        }
-
-        if (phoneNumber.length < 10) {
-            setErrorMessage('Must be 10 digits');
-            setTimeout(() => {
-                setErrorMessage('');
-            }, 2000);
-            return;
-        }
-        console.log('Name:', name);
-        console.log('Phone Number:', phoneNumber);
+        console.log('Name:', updateName);
+        console.log('Phone Number:', updatePhone);
         fetch(`/update/${selectedContactId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name: name, phone: phoneNumber }),
+            body: JSON.stringify({ name: updateName, phone: updatePhone }),
         })
             .then((response) => response.json())
             .then((result) => {
                 console.log(result);
                 fetchData();
-                setName('');
-                setPhoneNumber('');
                 setEditPressed(false);
                 setPopupMessageE('Contact updated successfully!');
                 setTimeout(() => {
                     setPopupMessageE('');
                 }, 2000);
-                setName('');
-                setPhoneNumber('');
+                setUpdateName('');
+                setUpdatePhone('');
             })
             .catch((error) => {
                 console.error('Error updating contact:', error);
@@ -187,26 +165,25 @@ const App = () => {
                     <h1 className="pb13">Add contact</h1>
                     <div className="phone_book_main13">
                         <div className="c-f">
-                            <form onClick={handleSubmit}>
+                            <form onSubmit={handleSubmit}>
                                 <label className="name-main">
                                     Name <br />
                                     <input
                                         type="text"
-                                        value={name}
-                                        onChange={handleNameChange}
+                                        value={submitName}
+                                        onChange={handleSubmitNameChange}
                                         placeholder="Enter name"
                                         required
                                         className="name-box"
                                     />
                                     <br />
                                 </label>
-                                {errorMessage && <div className="error-msz">{errorMessage}</div>}
                                 <label className="number-main">
                                     Number <br />
                                     <input
                                         type="tel"
-                                        value={phoneNumber}
-                                        onChange={handlePhoneNumberChange}
+                                        value={submitPhone}
+                                        onChange={handleSubmitPhoneNumberChange}
                                         placeholder="Enter phone number"
                                         pattern="[0-9]+"
                                         className="number-box"
@@ -216,7 +193,7 @@ const App = () => {
                                     />
                                     <br />
                                 </label>
-                                <button className="phone_book_button11">Save</button>
+                                <button type="submit" className="phone_book_button11">Save</button>
                             </form>
                         </div>
                     </div>
@@ -239,21 +216,20 @@ const App = () => {
                                         Enter Name <br />
                                         <input
                                             type="text"
-                                            value={name}
-                                            onChange={handleNameChange}
+                                            value={updateName}
+                                            onChange={handleUpdateNameChange}
                                             placeholder="Edit Name"
                                             required
                                             className=" name-box"
                                         />
                                     </label>
                                     <br />
-                                    {errorMessage && <div className="error-msz">{errorMessage}</div>}
                                     <label className="number-main">
                                         Edit Number <br />
                                         <input
                                             type="tel"
-                                            value={phoneNumber}
-                                            onChange={handlePhoneNumberChange}
+                                            value={updatePhone}
+                                            onChange={handleUpdatePhoneNumberChange}
                                             placeholder="Enter Phone Number"
                                             pattern="[0-9]{10}"
                                             minLength={10}
@@ -262,10 +238,8 @@ const App = () => {
                                         />
                                     </label>
                                     <br />
-                                    <button className="e-s" onClick={handleEdit}>
-                                        Save
-                                    </button>
-                                    <button className="e-c" onClick={() => setEditPressed(false)}>
+                                    <button type="submit" className="e-s">Save</button>
+                                    <button type="button" className="e-c" onClick={() => setEditPressed(false)}>
                                         Cancel
                                     </button>
                                 </form>
@@ -298,14 +272,14 @@ const App = () => {
                                                     <i className="fa-solid fa-trash fa-lg"></i>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        ))} 
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         {popupMessage && <div className="popup-message">{popupMessage}</div>}
                         {popupMessageE && <div className="popup-message">{popupMessageE}</div>}
-                        <div className="t-c">Total contacts: {data.length}</div>
+                        <div className="t-c">Total contacts:<span>{data.length}</span></div>
                         <div className="home-icon" onClick={handleGoBack}>
                             <i className="fa-solid fa-house fa-xl" onClick={dismissDeleteConfirmation}></i>
                         </div>

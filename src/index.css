@@ -229,7 +229,7 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   width: 40vw;
-  height: 100vh;
+  height: auto;
   border-radius: 20px;
   margin-top: -20px;
   margin-right: -40px;
@@ -246,6 +246,14 @@ td {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+td {
+  height: 32px;
+}
+td:hover{
+  color: #18e771;
+}
+
 
 .text-data {
   background-color: #7CF0BD;
@@ -301,22 +309,20 @@ td {
 }
 
 .t-c {
-  font-size: 20px;
+  font-size: 25px;
   display: flex;
   margin-top: -15px;
+  color: #000000;
 }
-
-.error-msz {
-  display: flex;
-  margin-bottom: 20px;
-  margin-top: -15px;
-  color: #da4167;
+span{
+  color: #18e771;
+  margin-left: 10px;
 }
 
 .popup-message {
   display: flex;
   justify-content: center;
-  color: #da4167;
+  color: #18e771;
   font-size: 20px;
 }
 
